@@ -12,6 +12,23 @@ class Counter extends React.Component {
     };
   }
 
+  //parseInt(num, 10)
+
+  componentDidMount() {
+    const count = parseInt(localStorage.getItem('num'));
+
+    if(!isNaN(count)) {
+      this.setState( () => ({count}));
+    }
+
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.count !== this.state.count) {
+      localStorage.setItem('num', this.state.count);
+    }
+  }
+
   handleAddOne() {
     // don't manually update the state like this! It won't rerender
     // this.state.count = this.state.count +1;
@@ -34,16 +51,8 @@ class Counter extends React.Component {
     });
   }
   handleReset() {
-    this.setState(() => {
-      return {
-        count: 0
-      }
-    });
-    this.setState((prevState) => {
-      return {
-        count: prevState.count +1
-      }
-    });
+    this.setState(() => ({count: 0}));
+    
     // Calls to setState are asynchronous!
     // This is the old syntax.
     // this.setState({
@@ -64,6 +73,10 @@ class Counter extends React.Component {
       </div>
     );
   }
+}
+
+Counter.defaultProps = {
+  count: 0
 }
 
 ReactDOM.render(<Counter/>, document.getElementById('app'))
