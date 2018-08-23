@@ -1,17 +1,49 @@
 import { createStore } from 'redux';
 
-const store = createStore((state = { count: 0 }, action) => {
+// Action Generators - functions that return action objects
+
+// Destructured Arguments to a function
+// const add = ({a,b}, c) => {
+//   return a + b + c;
+// }
+// console.log(add({a: 1, b:12}, 1000));
+
+const incrementCount = ({incrementBy = 1} = {}) => ({
+  type: `INCREMENT`,
+  incrementBy
+}); 
+
+const decrementCount = ({decrementBy = 1} = {}) => ({
+  type: 'DECREMENT',
+  decrementBy
+})
+
+const setCount = ({newCount} = {}) => ({
+  type:'SET',
+  newCount
+});
+
+const resetCount = () => ({
+  type:'RESET'
+})
+
+// Reducers describe what the application does in response to actions.
+// "how do we change state?"
+
+// Reducers
+// 1. Reducers are pure functions (Output is only determined by input. Does not set any variables outside of its scope)
+// 2. Never change state or action. Return an object with the new values
+
+const countReducer = (state = { count: 0 }, action) => {
   // Default happens when store first created.
   switch (action.type) {
     case 'INCREMENT':
-      const incrementBy = typeof (action.incrementBy) === 'number' ? action.incrementBy : 1;
       return {
-        count: state.count + incrementBy
+        count: state.count + action.incrementBy
       };
     case 'DECREMENT':
-      const decrementBy = typeof (action.decrementBy) === 'number' ? action.decrementBy : 1;
       return {
-        count: state.count - decrementBy
+        count: state.count - action.decrementBy
       };
     case 'RESET':
       return {
@@ -19,12 +51,14 @@ const store = createStore((state = { count: 0 }, action) => {
       };
     case 'SET':
       return {
-        count: action.count
+        count: action.newCount
       };
     default:
       return state;
   }
-});
+};
+
+const store = createStore(countReducer);
 
 // Gets called every time the store changes
 // Return value - can be called to unsubscribe!
@@ -40,42 +74,26 @@ const unsubscribe = store.subscribe(() => {
 // MUST have type!
 // Runs the "createStore" function when dispatch goes
 store.dispatch(
-  {
-    type: 'INCREMENT',
-    incrementBy: 5
-  }
+  incrementCount()
 );
 // Unsubscribe
 // unsubscribe();
 
+store.dispatch(incrementCount({ incrementBy: 5 }));
+
 store.dispatch(
-  {
-    type: 'RESET'
-  }
+  resetCount()
 );
 
 store.dispatch(
-  {
-    type: 'DECREMENT'
-  }
+  decrementCount()
 );
 
 store.dispatch(
-  {
-    type: 'DECREMENT',
-    decrementBy: 5
-  }
+  decrementCount({decrementBy: 10})
 );
 
-store.dispatch(
-  {
-    type: 'INCREMENT'
-  }
-);
 
-store.dispatch({
-  type: 'SET',
-  count: 101
-})
+store.dispatch(setCount({newCount: 1001}));
 
 
